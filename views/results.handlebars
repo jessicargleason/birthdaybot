@@ -1,9 +1,21 @@
-<p>Results</p>
-<p>{{#if results.error}}
-       <p>Sorry, can't get that birthday!</p>
-    {{else}}
-      <p>Got it! {{results.name}}'s birthday is on {{results.month}}/{{results.day}}</p>
-      {{#if results.spotify}}
-      <p>Listen to <a href="{{results.spotifyLink}}">{{results.spotifyName}} on Spotify</a> where they have {{results.followers}} followers!</p>
-      {{/if}}
-    {{/if}}</p>
+{{#if results.error}}
+    <h2>Sorry!</h2>
+    <p>Can't get that birthday! <svg class="icon" alt="thumbs down" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" />
+</svg></p>
+{{else}}
+<h2>Got it!</h2>
+  <p>{{results.name}}'s birthday is on <span class="birthday">{{results.month}}/{{results.day}}</span><!-- from https://heroicons.com/ --><svg alt="birthday cake" class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z" />
+</svg></p>
+  {{#if results.spotify}}
+  <p>Listen to <a href="{{results.spotifyLink}}" target="_blank">{{results.spotifyName}} on Spotify</a> where they have {{results.followers}} followers!</p>
+  {{/if}}
+{{/if}}
+
+<h2>Try Again</h2>
+<form action="/birthdays/" method="POST">
+<label for="name">Famous Person's Name</label>
+    <input id="name" type="text" name="name" placeholder="Lady Gaga" /><br />
+    <input type="submit" value="Get Birthday" />
+</form>
