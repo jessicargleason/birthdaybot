@@ -56,7 +56,6 @@ app.post('/birthdays/', (req, res) => {
           error: e
     });
   });
-  return setUpResults;
     
 });
 
@@ -66,7 +65,7 @@ function setUpResults(name) {
     console.log("getting ID");
     return getArtistId(result)
   })
-  .then(function(result) {
+   .then(function(result) {
     console.log("getting artist");
     return getArtist(result)
   })
@@ -79,7 +78,9 @@ function setUpResults(name) {
     console.log(results);
     return Promise.resolve(true);
   })
-  .catch();
+  .catch((error) => {
+    console.log(error);
+  });
   
   return generateResults;
 }
@@ -100,6 +101,10 @@ function getArtistId(formattedName) {
       let body = "";
       res.on("data", data => {
         body += data;
+      });
+      res.on('error', (e) => {
+        console.error(e);
+        reject();
       });
       res.on("end", () => {
         body = JSON.parse(body);
@@ -128,11 +133,15 @@ function getArtistId(formattedName) {
           res.on("data", data => {
             body += data;
           });
+          res.on('error', (e) => {
+            console.error(e);
+            reject();
+          });
           res.on("end", () => {
             body = JSON.parse(body);
             //console.log(body.entities[id].claims.P569);
             console.log("Success!");
-            // Go through the data and find Spotify ID (P1902)
+            
             // Go through the data and find the birth date (P569)
             if (body.entities[id].claims.P569 !== undefined) {
               let birthday = body.entities[id].claims.P569[0].mainsnak.datavalue.value.time;
@@ -148,6 +157,7 @@ function getArtistId(formattedName) {
               results.error = true;
             }
 
+            // Go through the data and find Spotify ID (P1902)
             if (body.entities[id].claims.P1902 !== undefined) {
               resolve(body.entities[id].claims.P1902[0].mainsnak.datavalue.value);
             } else {
@@ -158,6 +168,7 @@ function getArtistId(formattedName) {
         });
 
       } else {
+        results.error = true;
         resolve(false)
       }
 
