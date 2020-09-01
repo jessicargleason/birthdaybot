@@ -11,6 +11,11 @@
   <div class="wrapper">
       <h1>Birthday Bot</h1>
       {{{body}}}
+      <form action="/birthdays/" method="POST">
+          <label for="name">Name</label>
+          <input id="name" type="text" name="name" placeholder="Lady Gaga" /><br />
+          <input type="submit" value="Get Birthday" />
+      </form>
     </div>
   </body>
 </html>

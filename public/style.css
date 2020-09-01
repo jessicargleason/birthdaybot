@@ -38,7 +38,7 @@ label {
 }
 
 input[type=text] {
-    font-size: 2em;
+    font-size: 1.2em;
     height: 42px;
 }
 
@@ -46,7 +46,7 @@ input[type=submit] {
     background: rgba(131,58,180,1);
     box-shadow: 2px 2px 5px 0 rgba(131,58,180,.8);
     color: #fff;
-    font-size: 1.5em;
+    font-size: 1.1em;
     padding: 10px;
     border: none;
     margin: 15px;
@@ -72,8 +72,16 @@ input[type=submit]:hover {
     vertical-align: text-bottom;
 }
 
+.intro {
+    font-size: 1.1em;
+    text-align: center;
+}
+
 @media screen and (min-width: 768px) {
     h1 {
         font-size: 72px;
+    }
+    input[type=text] {
+        font-size: 2em;
     }
 }

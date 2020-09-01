@@ -87,36 +87,46 @@ function setUpResults(name) {
 
 function formatName(name) {
   return new Promise((resolve, reject)=>{
-    var formattedName = name.split(' ').join('+');;
-    resolve(formattedName);
+    var formattedName = name.split(' ').join('+');
+    if (formattedName !== '') {
+      resolve(formattedName);
+    } else {
+      results.empty = true;
+      resolve(false);
+    }
   });
 }
 
 function getArtistId(formattedName) {
   return new Promise((resolve, reject)=>{
-    var requestURL = 'https://www.wikidata.org/w/api.php?action=wbsearchentities&search=' + formattedName + '&language=en&format=json&limit=1';
-    
-    https.get(requestURL, res => {
-      res.setEncoding("utf8");
-      let body = "";
-      res.on("data", data => {
-        body += data;
+    if (formattedName !== false) {
+      var requestURL = 'https://www.wikidata.org/w/api.php?action=wbsearchentities&search=' + formattedName + '&language=en&format=json&limit=1';
+      
+      https.get(requestURL, res => {
+        res.setEncoding("utf8");
+        let body = "";
+        res.on("data", data => {
+          body += data;
+        });
+        res.on('error', (e) => {
+          console.error(e);
+          reject();
+        });
+        res.on("end", () => {
+          body = JSON.parse(body);
+          if (body.search[0] !== undefined) {
+            var id = body.search[0].id;
+            resolve(id);
+            } else {
+              results.error = true;
+              resolve(false);
+            }
+        });
       });
-      res.on('error', (e) => {
-        console.error(e);
-        reject();
-      });
-      res.on("end", () => {
-        body = JSON.parse(body);
-        if (body.search[0] !== undefined) {
-          var id = body.search[0].id;
-          resolve(id);
-          } else {
-            results.error = true;
-            resolve(false);
-          }
-      });
-    });
+    } else {
+      results.error = true;
+      resolve(false);
+    }
   });
 }
 
