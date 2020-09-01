@@ -67,7 +67,12 @@ function setUpResults(name) {
     return getArtistId(result)
   })
   .then(function(result) {
+    console.log("getting artist");
     return getArtist(result)
+  })
+  .then(function(result) {
+    console.log("getting spotify");
+    return getSpotify(result)
   })
   .then(function(result) {
     console.log("we're done");
@@ -75,54 +80,14 @@ function setUpResults(name) {
     return Promise.resolve(true);
   })
   .catch();
-  //console.log(formattedName);
-  //const artistId = getArtistId(formattedName);
-  //console.log(artistId);
-  //getArtist(artistId);
-  /* if (artistId !== false) {
-    let body = getArtist(artistId);
-    //console.log(body);
-    //body = JSON.parse(body);
-    // Go through the data and find the birth date (P569)
-    if (body.entities[id].claims.P569 !== undefined) {
-      let birthday = body.entities[id].claims.P569[0].mainsnak.datavalue.value.time;
-      //Stop JS from trying to do time zone conversion
-      birthday = birthday.split('T')[0];
-      birthday = birthday.replace('+','');
-      birthday = birthday.replace(/\-/g,'/');
-      results.birthday = birthday;
-      birthday = new Date(birthday);
-      results.month = (birthday.getMonth() + 1).toString();
-      results.day = birthday.getDate().toString();
-    } else {
-
-      results.error = true;
-      return false;
-    } */
-    /* Spotify ID (P1902) */
-    /* if (body.entities[id].claims.P1902 === undefined) {
-
-      console.log("no spotify");
-      render.spotify = false;
-      return false;
-    } else {
-    var spotify = body.entities[id].claims.P1902[0].mainsnak.datavalue.value;
-
-      //getSpotify(spotify);
-    } 
-  } else {
-    //can't find person
-  }*/
-  //return Promise.resolve();
+  
   return generateResults;
 }
 
 function formatName(name) {
   return new Promise((resolve, reject)=>{
-    var formattedName = name.split(' ').join('+');
-    //getArtistId(formattedName);
+    var formattedName = name.split(' ').join('+');;
     resolve(formattedName);
-    //getArtistId(formattedName);
   });
 }
 
@@ -141,11 +106,9 @@ function getArtistId(formattedName) {
         if (body.search[0] !== undefined) {
           var id = body.search[0].id;
           resolve(id);
-          //console.log(id);
-          //getArtist(id);
           } else {
             results.error = true;
-            return false;
+            resolve(false);
           }
       });
     });
@@ -156,78 +119,96 @@ function getArtistId(formattedName) {
 	
 	function getArtist(id) {
     return new Promise((resolve, reject)=>{
-    var requestURL = 'https://www.wikidata.org/wiki/Special:EntityData/' + id + '.json';
-    
-    https.get(requestURL, res => {
-      res.setEncoding("utf8");
-      let body = "";
-      res.on("data", data => {
-        body += data;
-      });
-      res.on("end", () => {
-        body = JSON.parse(body);
-        //console.log(body.entities[id].claims.P569);
-        console.log("Success!");
-        // Go through the data and find the birth date (P569)
-        if (body.entities[id].claims.P569 !== undefined) {
-          let birthday = body.entities[id].claims.P569[0].mainsnak.datavalue.value.time;
-          //Stop JS from trying to do time zone conversion
-          birthday = birthday.split('T')[0];
-          birthday = birthday.replace('+','');
-          birthday = birthday.replace(/\-/g,'/');
-          results.birthday = birthday;
-          birthday = new Date(birthday);
-          results.month = (birthday.getMonth() + 1).toString();
-          results.day = birthday.getDate().toString();
-          resolve(true);
-        } else {
-          results.error = true;
-          return false;
-        }
+      if (id !== false) {
+        var requestURL = 'https://www.wikidata.org/wiki/Special:EntityData/' + id + '.json';
         
-      });
-    });
+        https.get(requestURL, res => {
+          res.setEncoding("utf8");
+          let body = "";
+          res.on("data", data => {
+            body += data;
+          });
+          res.on("end", () => {
+            body = JSON.parse(body);
+            //console.log(body.entities[id].claims.P569);
+            console.log("Success!");
+            // Go through the data and find Spotify ID (P1902)
+            // Go through the data and find the birth date (P569)
+            if (body.entities[id].claims.P569 !== undefined) {
+              let birthday = body.entities[id].claims.P569[0].mainsnak.datavalue.value.time;
+              //Stop JS from trying to do time zone conversion
+              birthday = birthday.split('T')[0];
+              birthday = birthday.replace('+','');
+              birthday = birthday.replace(/\-/g,'/');
+              results.birthday = birthday;
+              birthday = new Date(birthday);
+              results.month = (birthday.getMonth() + 1).toString();
+              results.day = birthday.getDate().toString();
+            } else {
+              results.error = true;
+            }
 
-  });
+            if (body.entities[id].claims.P1902 !== undefined) {
+              resolve(body.entities[id].claims.P1902[0].mainsnak.datavalue.value);
+            } else {
+              resolve(false);
+            }
+            
+          });
+        });
+
+      } else {
+        resolve(false)
+      }
+
+    });
 		
 	}
  
 
 function getSpotify(id) {
-  var requestURL = "https://api.spotify.com/v1/artists/" + id;
-  
-  var authOptions = {
-    url: 'https://accounts.spotify.com/api/token',
-    headers: {
-      'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
-    },
-    form: {
-      grant_type: 'client_credentials'
-    },
-    json: true
-  };
-  
-  request.post(authOptions, function(error, response, body) {
-    if (!error && response.statusCode === 200) {
-  
-      // use the access token to access the Spotify Web API
-      var token = body.access_token;
-      var options = {
-        url: requestURL,
-        headers: {
-          'Authorization': 'Bearer ' + token
-        },
-        json: true
-      };
-      request.get(options, function(error, response, body) {
-        results.spotifyLink = body["external_urls"]["spotify"];
-        results.genres = body["genres"];
-        results.followers = body["followers"]["total"].toString();
-        console.log(results);
-        spotify = true;
-        return;
-      });
-    }
+  return new Promise((resolve, reject)=>{
+    if (id !== false) {
+    var requestURL = "https://api.spotify.com/v1/artists/" + id;
+    
+    var authOptions = {
+      url: 'https://accounts.spotify.com/api/token',
+      headers: {
+        'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
+      },
+      form: {
+        grant_type: 'client_credentials'
+      },
+      json: true
+    };
+    
+    request.post(authOptions, function(error, response, body) {
+      if (!error && response.statusCode === 200) {
+    
+        // use the access token to access the Spotify Web API
+        var token = body.access_token;
+        var options = {
+          url: requestURL,
+          headers: {
+            'Authorization': 'Bearer ' + token
+          },
+          json: true
+        };
+        request.get(options, function(error, response, body) {
+          results.spotifyLink = body["external_urls"]["spotify"];
+          results.genres = body["genres"];
+          results.followers = body["followers"]["total"].toString();
+          results.spotifyName = body["name"];
+          //console.log(results);
+          results.spotify = true;
+          resolve(true);
+        });
+      }
+    });
+  } else {
+    resolve(true);
+  }
+
   });
   
 }
