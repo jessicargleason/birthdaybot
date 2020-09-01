@@ -1,2 +1,12 @@
 <p>Results</p>
-<p>{{results}}</p>
+<p>{{#if results.error}}
+       <p>Sorry, can't get that birthday!</p>
+    {{else}}
+    {{#each results}}
+    <p>{{this}}</p>
+    {{/each}}
+      <p>Got it! {{results.name}}'s birthday is on {{results.month}}/{{results.day}}</p>
+      {{#if spotify}}
+      <p>You can find them <a href="{{results.spotifyLink}}">on Spotify</a> where they have {{results.followers}} followers.</p>
+      {{/if}}
+    {{/if}}</p>
