@@ -9,6 +9,7 @@ const app = express();
 const handlebars = require('express-handlebars');
 const request = require('request');
 const helmet = require('helmet');
+const { resolve } = require('path');
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
 
@@ -45,7 +46,9 @@ app.post('/birthdays/', (req, res) => {
   results = {};
   
   results.name = req.body.name;
-  formatName(req.body.name).then(() => {
+  setUpResults(req.body.name).then(() => {
+    console.log("ready to render");
+    console.log(results);
     res.render('results', {layout : 'index', results: results});
   })
   .catch(function (e) {
@@ -58,8 +61,21 @@ app.post('/birthdays/', (req, res) => {
 });
 
 function setUpResults(name) {
-  const formattedName = formatName(name);
-  console.log(formattedName);
+  const generateResults = formatName(name)
+  .then(function(result) {
+    console.log("getting ID");
+    return getArtistId(result)
+  })
+  .then(function(result) {
+    return getArtist(result)
+  })
+  .then(function(result) {
+    console.log("we're done");
+    console.log(results);
+    return Promise.resolve(true);
+  })
+  .catch();
+  //console.log(formattedName);
   //const artistId = getArtistId(formattedName);
   //console.log(artistId);
   //getArtist(artistId);
@@ -97,36 +113,41 @@ function setUpResults(name) {
   } else {
     //can't find person
   }*/
-  return Promise.resolve();
+  //return Promise.resolve();
+  return generateResults;
 }
 
 function formatName(name) {
-  var formattedName = name.split(' ').join('+');
-  getArtistId(formattedName);
-  //return formattedName;
-  //getArtistId(formattedName);
+  return new Promise((resolve, reject)=>{
+    var formattedName = name.split(' ').join('+');
+    //getArtistId(formattedName);
+    resolve(formattedName);
+    //getArtistId(formattedName);
+  });
 }
 
 function getArtistId(formattedName) {
-  var requestURL = 'https://www.wikidata.org/w/api.php?action=wbsearchentities&search=' + formattedName + '&language=en&format=json&limit=1';
-  
-  https.get(requestURL, res => {
-    res.setEncoding("utf8");
-    let body = "";
-    res.on("data", data => {
-      body += data;
-    });
-    res.on("end", () => {
-      body = JSON.parse(body);
-      if (body.search[0] !== undefined) {
-        var id = body.search[0].id;
-        //return id;
-        //console.log(id);
-        getArtist(id);
-        } else {
-          results.error = true;
-          return false;
-        }
+  return new Promise((resolve, reject)=>{
+    var requestURL = 'https://www.wikidata.org/w/api.php?action=wbsearchentities&search=' + formattedName + '&language=en&format=json&limit=1';
+    
+    https.get(requestURL, res => {
+      res.setEncoding("utf8");
+      let body = "";
+      res.on("data", data => {
+        body += data;
+      });
+      res.on("end", () => {
+        body = JSON.parse(body);
+        if (body.search[0] !== undefined) {
+          var id = body.search[0].id;
+          resolve(id);
+          //console.log(id);
+          //getArtist(id);
+          } else {
+            results.error = true;
+            return false;
+          }
+      });
     });
   });
 }
@@ -134,6 +155,7 @@ function getArtistId(formattedName) {
   /* Use Wikidata to get that artist's data using their ID */
 	
 	function getArtist(id) {
+    return new Promise((resolve, reject)=>{
     var requestURL = 'https://www.wikidata.org/wiki/Special:EntityData/' + id + '.json';
     
     https.get(requestURL, res => {
@@ -144,7 +166,7 @@ function getArtistId(formattedName) {
       });
       res.on("end", () => {
         body = JSON.parse(body);
-        console.log(body.entities[id].claims.P569);
+        //console.log(body.entities[id].claims.P569);
         console.log("Success!");
         // Go through the data and find the birth date (P569)
         if (body.entities[id].claims.P569 !== undefined) {
@@ -157,7 +179,7 @@ function getArtistId(formattedName) {
           birthday = new Date(birthday);
           results.month = (birthday.getMonth() + 1).toString();
           results.day = birthday.getDate().toString();
-          return Promise.resolve();
+          resolve(true);
         } else {
           results.error = true;
           return false;
@@ -165,6 +187,8 @@ function getArtistId(formattedName) {
         
       });
     });
+
+  });
 		
 	}
  
