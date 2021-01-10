@@ -10,23 +10,6 @@ body {
     color: #fff;
 }
 
-@-webkit-keyframes bounce {
-    0% {
-        opacity: 0;
-        top: -50px;
-    }
-    20% {
-        opacity: 1;
-    }
-    50% {
-        top: 10px;
-    }
-    100% {
-        opacity: 1;
-        top: 0;
-    }
-}
-
 @keyframes bounce {
     0% {
         opacity: 0;
@@ -50,8 +33,7 @@ h1 {
     text-align: center;
     color: #fff;
     position: relative;
-    -webkit-animation: bounce 1s ease-in-out forwards;
-            animation: bounce 1s ease-in-out forwards;
+    animation: bounce 1s ease-in-out forwards;
 }
 
 h2 {
@@ -82,7 +64,6 @@ label {
     font-size: 1.5em;
     color: #fff;
 }
-
 p {
     font-size: 1.1em;
     text-align: center;
