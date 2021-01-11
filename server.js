@@ -48,7 +48,7 @@ app.post('/birthdays/', (req, res) => {
   results.name = req.body.name;
   setUpResults(req.body.name).then(() => {
     console.log("ready to render");
-    console.log(results);
+    //console.log(results);
     res.render('results', {layout : 'index', results: results});
   })
   .catch(function (e) {
@@ -63,10 +63,12 @@ function setUpResults(name) {
   const generateResults = formatName(name)
   .then(function(result) {
     console.log("getting ID");
+    
     return getArtistId(result)
   })
    .then(function(result) {
     console.log("getting artist");
+    console.log(result);
     return getArtist(result)
   })
   .then(function(result) {
@@ -75,7 +77,7 @@ function setUpResults(name) {
   })
   .then(function(result) {
     console.log("we're done");
-    console.log(results);
+    //console.log(results);
     return Promise.resolve(true);
   })
   .catch((error) => {
@@ -130,6 +132,22 @@ function getArtistId(formattedName) {
   });
 }
 
+//Borrowed from https://stackoverflow.com/questions/13627308/add-st-nd-rd-and-th-ordinal-suffix-to-a-number
+function getOrdinalSuffix(i) {
+  var j = i % 10,
+      k = i % 100;
+  if (j == 1 && k != 11) {
+      return "st";
+  }
+  if (j == 2 && k != 12) {
+      return "nd";
+  }
+  if (j == 3 && k != 13) {
+      return "rd";
+  }
+  return "th";
+}
+
   /* Use Wikidata to get that artist's data using their ID */
 	
 	function getArtist(id) {
@@ -161,8 +179,50 @@ function getArtistId(formattedName) {
               birthday = birthday.replace(/\-/g,'/');
               results.birthday = birthday;
               birthday = new Date(birthday);
-              results.month = (birthday.getMonth() + 1).toString();
+              month = (birthday.getMonth() + 1).toString();
+              switch (month) {
+                case "1":
+                  monthName = "January";
+                  break;
+                case "2":
+                  monthName = "February";
+                  break;
+                case "3":
+                  monthName = "March";
+                  break;
+                case "4":
+                  monthName = "April";
+                  break;
+                case "5":
+                  monthName = "May";
+                  break;
+                case "6":
+                  monthName = "June";
+                  break;
+                case "7":
+                  monthName = "July";
+                  break;
+                case "8":
+                  monthName = "August";
+                  break;
+                case "9":
+                  monthName = "September";
+                  break;
+                case "10":
+                  monthName = "October";
+                  break;
+                case "11":
+                  monthName = "November";
+                  break;
+                case "12":
+                  monthName = "December";
+                  break;
+                default:
+                  monthName = "Unknown";
+              }
+              results.month = monthName;
               results.day = birthday.getDate().toString();
+              results.suffix = getOrdinalSuffix(birthday.getDate().toString());
             } else {
               results.error = true;
             }
@@ -217,7 +277,7 @@ function getSpotify(id) {
         };
         request.get(options, function(error, response, body) {
           results.spotifyLink = body["external_urls"]["spotify"];
-          results.genres = body["genres"];
+          results.genre = body["genres"][0];
           results.followers = body["followers"]["total"].toString();
           results.spotifyName = body["name"];
           //console.log(results);

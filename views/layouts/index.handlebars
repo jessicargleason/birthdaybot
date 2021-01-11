@@ -8,14 +8,17 @@
     <link rel="stylesheet" type="text/css" href="/birthdays/public/style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Coiny&display=swap" rel="stylesheet">
   </head>
-  <div class="wrapper">
+  <body class="bg-indigo-800 text-white">
+   <div class="max-w-screen-md mx-auto">
       <h1>Birthday Bot</h1>
-      {{{body}}}
-      <form action="/birthdays/" method="POST">
-          <label for="name">Name</label>
-          <input id="name" type="text" name="name" placeholder="Lady Gaga" /><br />
-          <input type="submit" value="Get Birthday" />
-      </form>
+      <div>
+        {{{body}}}
+        <form action="/birthdays/" method="POST">
+            <label for="name">Name</label>
+            <input id="name" type="text" name="name" placeholder="Lady Gaga" class="border border-black" /><br />
+            <input type="submit" value="Get Birthday" />
+        </form>
+      </div>
     </div>
   </body>
 </html>
