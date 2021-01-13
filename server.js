@@ -31,7 +31,8 @@ let results = {
 //Sets our app to use the handlebars engine
 app.set('view engine', 'handlebars');
 app.engine('handlebars', handlebars({
-layoutsDir: __dirname + '/views/layouts',
+  layoutsDir: __dirname + '/views/layouts',
+  partialsDir: __dirname + '/views/partials'
 }));
 
 //Serves static files (we need it to import a css file)
@@ -68,7 +69,7 @@ function setUpResults(name) {
   })
    .then(function(result) {
     console.log("getting artist");
-    console.log(result);
+    //console.log(result);
     return getArtist(result)
   })
   .then(function(result) {
@@ -276,10 +277,12 @@ function getSpotify(id) {
           json: true
         };
         request.get(options, function(error, response, body) {
+          //console.log(body);
           results.spotifyLink = body["external_urls"]["spotify"];
           results.genre = body["genres"][0];
           results.followers = body["followers"]["total"].toString();
           results.spotifyName = body["name"];
+          results.spotifyImage = body["images"][0]["url"];
           //console.log(results);
           results.spotify = true;
           resolve(true);
