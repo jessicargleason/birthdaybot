@@ -170,6 +170,14 @@ function getOrdinalSuffix(i) {
             body = JSON.parse(body);
             //console.log(body.entities[id].claims.P569);
             console.log("Success!");
+
+            //Get the name WikiData has for this person
+            results.pageName = body.entities[id].labels.en.value;
+
+            //Get their description
+            if (body.entities[id].descriptions.en.value !== undefined) {
+              results.description = body.entities[id].descriptions.en.value;
+            }
             
             // Go through the data and find the birth date (P569)
             if (body.entities[id].claims.P569 !== undefined) {
