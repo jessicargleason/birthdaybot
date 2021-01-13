@@ -230,8 +230,14 @@ function getOrdinalSuffix(i) {
                   monthName = "Unknown";
               }
               results.month = monthName;
-              results.day = birthday.getDate().toString();
-              results.suffix = getOrdinalSuffix(birthday.getDate().toString());
+              /* Sometimes birthdays on Wikidata are too vague to use */
+              if (birthday.getDate() > 0) {
+                results.day = birthday.getDate().toString();
+                results.suffix = getOrdinalSuffix(birthday.getDate().toString());
+              } else {
+                results.day = "";
+                results.suffix = "";
+              }
             } else {
               results.error = true;
             }
