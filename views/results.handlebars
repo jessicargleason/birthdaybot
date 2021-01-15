@@ -1,5 +1,5 @@
 <div class="max-w-screen-md mx-auto">
-  <div class="headline text-xl my-5">Birthday Bot</div>
+  <div class="headline text-2xl my-5">Birthday Bot</div>
   {{#if results.error}}
   <section class="container items-baseline">      
     <h2 class="text-xl">Sorry!</h2>
@@ -15,7 +15,7 @@
         {{#if results.spotifyImage}}
           <!-- image -->
           <div class="artist-photo-wrapper rounded-full mx-auto">
-            <img src="/birthdays/public/placeimg_640_480_people.jpg" class="block" alt="{{results.spotifyName}}" />
+            <img src="{{results.spotifyImage}}" class="block" alt="{{results.spotifyName}}" />
           </div>
           {{else}}
           <div class="text-white">
