@@ -35,14 +35,14 @@ layoutsDir: __dirname + '/views/layouts',
 }));
 
 //Serves static files (we need it to import a css file)
-app.use('/birthdays/public', express.static('public'))
+app.use('/birthday-bot/public', express.static('public'))
 
-app.get('/birthdays/', (req, res) => {
+app.get('/birthday-bot/', (req, res) => {
   //Serves the body of the page aka "main.handlebars" to the container //aka "index.handlebars"
   res.render('main', {layout : 'index'});
 });
 
-app.post('/birthdays/', (req, res) => {
+app.post('/birthday-bot/', (req, res) => {
   results = {};
   
   results.name = req.body.name;
