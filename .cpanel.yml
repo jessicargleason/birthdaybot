@@ -1,0 +1,5 @@
+--- 
+deployment: 
+     tasks: 
+          - export DEPLOYPATH=/home/stellmon/public_html/portfolio/birthdays/
+          - /bin/cp -R /* $DEPLOYPATH
