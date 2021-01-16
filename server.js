@@ -50,6 +50,7 @@ app.post('/birthday-bot/', (req, res) => {
   setUpResults(req.body.name).then(() => {
     console.log("ready to render");
     //console.log(results);
+    res.set("Content-Security-Policy", "default-src 'self' fonts.gstatic.com fonts.googleapis.com i.scdn.co");
     res.render('results', {layout : 'index', results: results});
   })
   .catch(function (e) {
