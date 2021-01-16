@@ -6,16 +6,12 @@
     <title>BirthdayBot</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <link rel="stylesheet" type="text/css" href="/birthday-bot/public/style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Coiny&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
   </head>
-  <div class="wrapper">
-      <h1>Birthday Bot</h1>
-      {{{body}}}
-      <form action="/birthday-bot/" method="POST">
-          <label for="name">Name</label>
-          <input id="name" type="text" name="name" placeholder="Lady Gaga" /><br />
-          <input type="submit" value="Get Birthday" />
-      </form>
-    </div>
+  <body class="bg-indigo-800 text-white border-t-8 py-5 border-indigo-100">
+      <div>
+        {{{body}}}
+      </div>
   </body>
 </html>
